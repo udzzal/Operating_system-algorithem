@@ -4,3 +4,5 @@
 
 2 // Shortest job first algorithem
 
+3// First come first serve algorithem
+
