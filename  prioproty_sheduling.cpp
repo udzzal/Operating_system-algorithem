@@ -1,0 +1,127 @@
+#include<iostream>
+#include<pthread.h>
+#include<unistd.h>
+#include<algorithm>
+
+using namespace std;
+struct Process{
+    int processid;
+    int arrival_time;
+    int priority;
+    int burst_time;
+    int completion_time;
+    int turnaround_time;
+    int waiting_time;
+    int response_time;
+};
+
+void findCompletionTime(Process p[],int n){
+
+    int currenttime=0;
+    bool done[n];
+
+    for (int i = 0; i < n; i++) done[i] = false; 
+
+    int completed=0;
+
+    while(completed<n){
+        int maxpriority=-1e9;
+        int idx=-1;
+
+        for(int i=0;i<n;i++){
+            cout<<"jfkd";
+            if(!done[i] && p[i].arrival_time<= currenttime && p[i].priority> maxpriority){
+                maxpriority=p[i].priority;
+                idx=i;
+
+            }
+
+        }
+        if(idx != -1){
+            p[idx].completion_time=currenttime + p[idx].burst_time;
+            currenttime = p[idx].completion_time;
+            done[idx]=true;
+            completed++;
+        }else{
+            currenttime++;
+        }
+            
+      }
+};
+
+
+void findTurnAroundTime(Process p[],int n){
+    
+    for (int i = 0; i < n; i++)
+        p[i].turnaround_time = p[i].completion_time - p[i].arrival_time;
+
+};
+
+void findWaitingTime(Process p[],int n){
+    for (int i = 0; i < n; i++)
+        p[i].waiting_time = p[i].turnaround_time - p[i].burst_time;
+};
+
+void findResponseTime(Process p[],int n){
+    for (int i = 0; i < n; i++)
+        p[i].response_time = p[i].waiting_time;
+};
+
+void display(Process p[], int n) {
+    float totalWT = 0, totalTAT = 0;
+    cout << "\n----------------------------------------------------------\n";
+    cout << "PID\tAT\tPRI\tBT\tCT\tTAT\tWT\tRT\n";
+    cout << "----------------------------------------------------------\n";
+    for (int i = 0; i < n; i++) {
+        cout << p[i].processid      << "\t"
+             << p[i].arrival_time   << "\t"
+             << p[i].priority       << "\t"
+             << p[i].burst_time     << "\t"
+             << p[i].completion_time<< "\t"
+             << p[i].turnaround_time<< "\t"
+             << p[i].waiting_time   << "\t"
+             << p[i].response_time  << "\n";
+        totalWT  += p[i].waiting_time;
+        totalTAT += p[i].turnaround_time;
+    }
+    cout << "----------------------------------------------------------\n";
+    cout << "Average Waiting Time    : " << totalWT  / n << "\n";
+    cout << "Average Turnaround Time : " << totalTAT / n << "\n";
+}
+
+
+bool comparearrivaltime(const Process &a, const  Process &b){
+    return a.arrival_time < b.arrival_time;
+};
+
+
+int main(){
+    int n;
+    cout<<"Enter the number of process"<<endl;
+    cin>>n;
+
+    Process p[n];
+
+    for(int i=0;i<n;i++){
+         p[i].processid=i;
+
+
+        cout<<"\nEnter "<<i+1<<" arrival time : ";
+        cin>>p[i].arrival_time;
+        cout<<"\nEnter "<<i+1<<" priority : ";
+        cin>>p[i].priority;
+        cout<<"\nEnter "<<i+1<<" burst time : ";
+        cin>>p[i].burst_time;
+    }
+
+
+    sort(p,p+n,comparearrivaltime);
+
+    findCompletionTime(p,n);
+    findTurnAroundTime(p,n);
+    findWaitingTime(p,n);
+    findResponseTime(p,n);
+    display(p,n);
+
+    return 0;
+};
