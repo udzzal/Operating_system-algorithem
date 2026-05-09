@@ -18,9 +18,9 @@ struct Process{
 void findCompletionTime(Process p[],int n){
 
     int currenttime=0;
-    bool done[n];
+    bool done[1000]={false};
 
-    for (int i = 0; i < n; i++) done[i] = false; 
+    
 
     int completed=0;
 
@@ -89,10 +89,6 @@ void display(Process p[], int n) {
 }
 
 
-bool comparearrivaltime(const Process &a, const  Process &b){
-    return a.arrival_time < b.arrival_time;
-};
-
 
 int main(){
     int n;
@@ -114,7 +110,7 @@ int main(){
     }
 
 
-    sort(p,p+n,comparearrivaltime);
+    
 
     findCompletionTime(p,n);
     findTurnAroundTime(p,n);
