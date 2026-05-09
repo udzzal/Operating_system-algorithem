@@ -29,7 +29,6 @@ void findCompletionTime(Process p[],int n){
         int idx=-1;
 
         for(int i=0;i<n;i++){
-            cout<<"jfkd";
             if(!done[i] && p[i].arrival_time<= currenttime && p[i].priority> maxpriority){
                 maxpriority=p[i].priority;
                 idx=i;
