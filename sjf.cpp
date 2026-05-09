@@ -1,80 +1,93 @@
-#include <iostream>
 
+#include <iostream>
+#include <climits>
+#include <vector>
 using namespace std;
 
 struct Process {
     int processid;
     int arrivaltime;
-    int brusttime;
+    int bursttime;
     int completiontime;
-    int turnarouundtime;
-    int watingtime;
+    int turnaroundtime;
+    int waitingtime;
 };
 
-void findsjf(Process process[],int n){
-    int remaningtime[n];
-    for(int i=0;i<n;i++){
-        remaningtime[i]=process[i].brusttime;
-    };
+void findSJF(vector<Process>& process, int n) {
+    vector<int> remainingtime(n);
+    for (int i = 0; i < n; i++)
+        remainingtime[i] = process[i].bursttime;
 
-    int currenttime=0,complete=0;
-    int shortestbustindex=0;
-    int minbusttime=__INT_MAX__;
+    int currenttime = 0, complete = 0;
+    int minbursttime, shortestindex;
 
-    while(complete<n){
-        minbusttime=__INT_MAX__;
-        for(int i=0;i<n;i++){
-            if(process[i].arrivaltime<=currenttime && remaningtime[i]<minbusttime && remaningtime[i]>0){
-                minbusttime=remaningtime[i];
-                shortestbustindex=i;
-            };
-        };
-        remaningtime[shortestbustindex]--;
-        if(remaningtime[shortestbustindex]==0){
-            complete++;
-            process[shortestbustindex].completiontime=currenttime+1;    
-            process[shortestbustindex].turnarouundtime=process[shortestbustindex].completiontime-process[shortestbustindex].arrivaltime;
-            process[shortestbustindex].watingtime=process[shortestbustindex].turnarouundtime-process[shortestbustindex].brusttime;  
-        };
-        currenttime++;
-    };
-};
+    while (complete < n) {
+        minbursttime = INT_MAX;
+        shortestindex = -1; 
 
-void printtable( Process process[],int n){
-    cout<<"----------------------------------------------------------"<<endl;
-
-    cout<<"| process_id | arrivaltime | brusttime | completiontime | turnaroundtime | watingtime |"<<endl;
-    cout<<"----------------------------------------------------------"<<endl;
-    for(int i=0;i<n;i++){
-        cout<<"| "<<process[i].processid<<" \t\t| "<<process[i].arrivaltime<<" \t\t| "<<process[i].brusttime<<" \t\t| "<<process[i].completiontime<<" \t\t| "<<process[i].turnarouundtime<<" \t\t| "<<process[i].watingtime<<" \t\t|"<<endl;
-    };
-     
-    cout<<"----------------------------------------------------------"<<endl;
-    
-};
-
-
-int main(){
-        // this is shortest job first algorithem
-
-        int n;
-        cout<<"Enter the number of process: ";
-        cin>>n;
-        Process process[n];
-
-        cout<<"\n Enter process details;\n";
-        for(int i=0;i<n;i++){
-            cout<<"process id :"<<i+1<<endl;
-            process[i].processid=i+1;
-            cout<<"arrivaltime :";
-            cin>>process[i].arrivaltime;
-            cout<<"brusttime :";
-            cin>>process[i].brusttime;
+        for (int i = 0; i < n; i++) {
+            if (process[i].arrivaltime <= currenttime &&
+                remainingtime[i] < minbursttime &&
+                remainingtime[i] > 0) {
+                minbursttime = remainingtime[i];
+                shortestindex = i;
+            }
         }
 
-        findsjf(process,n);
-        printtable(process,n);
+    
+        if (shortestindex == -1) {
+            currenttime++;
+            continue;
+        }
 
-    return 0;
+        remainingtime[shortestindex]--;
+
+        if (remainingtime[shortestindex] == 0) {
+            complete++;
+            process[shortestindex].completiontime = currenttime + 1;
+            process[shortestindex].turnaroundtime =
+                process[shortestindex].completiontime - process[shortestindex].arrivaltime;
+            process[shortestindex].waitingtime =
+                process[shortestindex].turnaroundtime - process[shortestindex].bursttime;
+        }
+
+        currenttime++;
+    }
 }
 
+void printTable(const vector<Process>& process, int n) {
+    cout << string(85, '-') << endl;
+    cout << "| PID | Arrival | Burst | Completion | Turnaround | Waiting |" << endl;
+    cout << string(85, '-') << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "|  " << process[i].processid
+             << "  |    " << process[i].arrivaltime
+             << "    |   " << process[i].bursttime
+             << "   |     " << process[i].completiontime
+             << "      |      " << process[i].turnaroundtime
+             << "      |    " << process[i].waitingtime
+             << "    |" << endl;
+    }
+    cout << string(85, '-') << endl;
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of processes: ";
+    cin >> n;
+
+    vector<Process> process(n);
+    cout << "\nEnter process details:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Process ID: " << i + 1 << endl;
+        process[i].processid = i + 1;
+        cout << "Arrival time: ";
+        cin >> process[i].arrivaltime;
+        cout << "Burst time: ";
+        cin >> process[i].bursttime;
+    }
+
+    findSJF(process, n);
+    printTable(process, n);
+    return 0;
+}
